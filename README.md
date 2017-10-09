@@ -1,7 +1,7 @@
 Redmine Mentions
 ================
 
-Allows users to mention team members in their notes/comments.
+Allows users to mention team members in their notes/comments. And send notification though Naver Line Channel.
 
 Functionality
 ==============
