@@ -2,9 +2,9 @@ module RedmineMentions
   module JournalPatch
     def self.included(base)
       base.class_eval do
-        after_create :send_mail
+        after_create :send_line
         
-        def send_mail
+        def send_line
           if self.journalized.is_a?(Issue) && self.notes.present?
             issue = self.journalized
             project=self.journalized.project
@@ -16,10 +16,35 @@ module RedmineMentions
             mentioned_users.each do |mentioned_user|
               username = mentioned_user.first[1..-1]
               if user = User.find_by_login(username)
-                MentionMailer.notify_mentioning(issue, self, user).deliver
+                #MentionMailer.notify_mentioning(issue, self, user).deliver
+                send_notification(issue, self, user)
+              begin
               end
             end
           end
+
+          def send_notification(issue, self, user)
+              begin
+                Rails.logger.warn("Redmine <-> Line Starting(#{get_channel_key})....M:#{msg}")
+                uri = URI('http://bros.focus100.tw/line_notifiers/ext_call')
+                get_channel_key = Setting["plugin_redmine_mentions"]["channel_key"]
+                get_site_line_token = Setting["plugin_redmine_mentions"]["channel_token"]
+
+                params = {:key=>get_channel_key,:message=> msg,:token=>get_site_line_token,:to_user_name=>user.login}
+
+                if Rails.env.production?
+                  uri.query = URI.encode_www_form(params)
+                  res = Net::HTTP.get_response(uri)
+                else
+                  Rails.logger.warn("Redmine not in production...notification request not sent.")
+                end
+                
+              rescue Exception => e
+                Rails.logger.warn("Redmine <-> Line push notification failed")
+                Rails.logger.warn(e)
+              end
+          end
+
         end
       end
     end

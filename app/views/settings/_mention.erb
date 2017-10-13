@@ -4,3 +4,13 @@
   <%= select_tag('settings[trigger]',
                  options_for_select(['@',':','~','!','#','%'],settings['trigger'])) %>
 </p>
+
+<p>
+  <label for="settings[channel_key]">Channel Key</label>
+  <%= text_field_tag('settings[channel_key]',settings['channel_key']) %>
+</p>
+
+<p>
+  <label for="settings[channel_token]">Channel Token</label>
+  <%= text_field_tag('settings[channel_token]',settings['channel_token']) %>
+</p>
