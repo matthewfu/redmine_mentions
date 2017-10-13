@@ -23,12 +23,18 @@ module RedmineMentions
             end
           end
 
-          def send_notification(issue, self, user)
+          def send_notification(issue, journal, self, user)
               begin
                 Rails.logger.warn("Redmine <-> Line Starting(#{get_channel_key})....M:#{msg}")
                 uri = URI('http://bros.focus100.tw/line_notifiers/ext_call')
                 get_channel_key = Setting["plugin_redmine_mentions"]["channel_key"]
                 get_site_line_token = Setting["plugin_redmine_mentions"]["channel_token"]
+                msg = "You are tagged at : #{issue.project.name} - #{issue.tracker.name} - #{issue.id} #{issue.subject} \n\n"
+                msg << "#{issue_url(issue)} \n\n"
+                msg << "#{issue_url(issue).gsub("http","googlechrome")} \n\n"
+                msg << "#{journal.notes} \n\n"
+                
+                msg << "Tagged by : #{journal.user.login} - #{journal.created_on.to_s(:db)} \n\n"
 
                 params = {:key=>get_channel_key,:message=> msg,:token=>get_site_line_token,:to_user_name=>user.login}
 
