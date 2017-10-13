@@ -28,7 +28,7 @@ module RedmineMentions
                 get_channel_key = Setting["plugin_redmine_mentions"]["channel_key"]
                 get_site_line_token = Setting["plugin_redmine_mentions"]["channel_token"]
                 journal = self
-                uri = URI('http://bros.focus100.tw/line_notifiers/ext_call')
+                uri = URI('http://bros.focus100.tw/line_notifiers/ext_call_person')
                 msg = "You are tagged at : #{issue.project.name} - #{issue.tracker.name} - #{issue.id} #{issue.subject} \n\n"
                 msg << "#{issue_url(issue,:host=>Setting.host_name)} \n\n"
                 msg << "#{issue_url(issue,:host=>Setting.host_name).gsub("http","googlechrome")} \n\n"
