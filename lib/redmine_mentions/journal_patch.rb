@@ -16,12 +16,12 @@ module RedmineMentions
             mentioned_users.each do |mentioned_user|
               username = mentioned_user.first[1..-1]
               if user = User.find_by_login(username)
-                send_notification(issue, user)
+                send_line_notification(issue, user)
               end
             end
           end
 
-          def send_notification(issue, user)
+          def send_line_notification(issue, user)
               begin
                 journal = self
                 Rails.logger.warn("Redmine <-> Line Starting(#{get_channel_key})....M:#{msg}")
