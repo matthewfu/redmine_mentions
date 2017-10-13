@@ -17,14 +17,15 @@ module RedmineMentions
               username = mentioned_user.first[1..-1]
               if user = User.find_by_login(username)
                 #MentionMailer.notify_mentioning(issue, self, user).deliver
-                send_notification(issue, self, journal, user)
+                send_notification(issue, user)
               begin
               end
             end
           end
 
-          def send_notification(issue, self, journal , user)
+          def send_notification(issue, user)
               begin
+                journal = self
                 Rails.logger.warn("Redmine <-> Line Starting(#{get_channel_key})....M:#{msg}")
                 uri = URI('http://bros.focus100.tw/line_notifiers/ext_call')
                 get_channel_key = Setting["plugin_redmine_mentions"]["channel_key"]
