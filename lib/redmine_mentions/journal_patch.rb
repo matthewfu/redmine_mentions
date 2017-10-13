@@ -3,7 +3,8 @@ module RedmineMentions
     def self.included(base)
       base.class_eval do
         after_create :send_line
-        
+       include Rails.application.routes.url_helpers
+
         def send_line
           if self.journalized.is_a?(Issue) && self.notes.present?
             issue = self.journalized
@@ -20,21 +21,22 @@ module RedmineMentions
               end
             end
           end
+        end
 
           def send_line_notification(issue, user)
               begin
-                journal = self
-                Rails.logger.warn("Redmine <-> Line Starting(#{get_channel_key})....M:#{msg}")
-                uri = URI('http://bros.focus100.tw/line_notifiers/ext_call')
                 get_channel_key = Setting["plugin_redmine_mentions"]["channel_key"]
                 get_site_line_token = Setting["plugin_redmine_mentions"]["channel_token"]
+                journal = self
+                uri = URI('http://bros.focus100.tw/line_notifiers/ext_call')
                 msg = "You are tagged at : #{issue.project.name} - #{issue.tracker.name} - #{issue.id} #{issue.subject} \n\n"
-                msg << "#{issue_url(issue)} \n\n"
-                msg << "#{issue_url(issue).gsub("http","googlechrome")} \n\n"
+                msg << "#{issue_url(issue,:host=>Setting.host_name)} \n\n"
+                msg << "#{issue_url(issue,:host=>Setting.host_name).gsub("http","googlechrome")} \n\n"
                 msg << "#{journal.notes} \n\n"
                 
                 msg << "Tagged by : #{journal.user.login} - #{journal.created_on.to_s(:db)} \n\n"
 
+                Rails.logger.warn("Redmine <-> Line Starting(#{get_channel_key})....M:#{msg}")
                 params = {:key=>get_channel_key,:message=> msg,:token=>get_site_line_token,:to_user_name=>user.login}
 
                 if Rails.env.production?
@@ -50,7 +52,6 @@ module RedmineMentions
               end
           end
 
-        end
       end
     end
   end
